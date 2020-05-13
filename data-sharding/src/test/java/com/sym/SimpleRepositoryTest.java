@@ -1,16 +1,19 @@
-package sym;
+package com.sym;
 
-import com.sym.ShardingJdbcApplication;
 import com.sym.entity.SimpleEntity;
 import com.sym.mapper.SimpleMapper;
+import com.sym.util.RandomUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * sharding-jdbc分库分表, 测试类
@@ -43,7 +46,8 @@ public class SimpleRepositoryTest {
     public void batchInsertTest() {
         SimpleEntity simpleEntity = new SimpleEntity();
         for (int i = 0; i < 10; i++) {
-            simpleEntity.setName("test_2020_" + i).setDescription("sharding-jdbc_" + i).setDeleted(false);
+            simpleEntity.setName(RandomUtil.getRandomString())
+                    .setDescription("sharding-jdbc_" + i).setDeleted(false);
             simpleMapper.insert(simpleEntity);
         }
     }
@@ -63,8 +67,9 @@ public class SimpleRepositoryTest {
      */
     @Test
     public void selectListByNamesTest() {
-        List<String> names = Arrays.asList("test_2020_3");
+        List<String> names = Collections.singletonList("test_2020_3");
         List<SimpleEntity> simpleEntities = simpleMapper.selectListByNames(names);
         log.info("查询结果：{}", simpleEntities);
     }
+
 }

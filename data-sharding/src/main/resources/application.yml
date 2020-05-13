@@ -5,13 +5,13 @@ spring:
       names: db1,db2
       db1: ## 数据源1的配置
         type: com.zaxxer.hikari.HikariDataSource
-        jdbcUrl: jdbc:mysql://localhost:3306/sharding_jdbc_1?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        jdbcUrl: jdbc:mysql://localhost:3307/sharding_jdbc_1?useUnicode=true&characterEncoding=utf-8&useSSL=false
         driver: com.mysql.jdbc.Driver
         username: root
         password: root
       db2: ## 数据源2的配置
         type: com.zaxxer.hikari.HikariDataSource
-        jdbcUrl: jdbc:mysql://localhost:3306/sharding_jdbc_2?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        jdbcUrl: jdbc:mysql://localhost:3307/sharding_jdbc_2?useUnicode=true&characterEncoding=utf-8&useSSL=false
         driver: com.mysql.jdbc.Driver
         username: root
         password: root
@@ -29,13 +29,18 @@ spring:
           ## 分库规则
           database-strategy:
             inline: ## 表示使用行表达式分片策略, 它支持groovy表达式
-              sharding-column: name #分片键
-              algorithm-expression: db${name.hashCode() % 2 + 1}
+              sharding-column: name #分片键(这边是为了表示分片表达式可以这样编写, 最好不要用hashCode求余)
+              algorithm-expression: db${Math.abs(name.hashCode()) % 2 + 1}
           ## 为t_simple表指定主键生成策略为雪花算法, 并指定主键主键列名为id
           key-generator:
             column: id
             type: SNOWFLAKE
+      ## 公共表配置, 每个数据节点需要各自创建一个公共表, 然后sharding-jdbc会一起维护(当新增、修改和删除的时候)
       broadcast-tables:
+        - t_dict
+      ## 绑定表配置, 比如t_order和t_order_item是绑定关系, 那么在关联查询的时候就可以避免笛卡尔积路由
+      ## 绑定表的意思就是两张表之间有关联字段, 这样sharding-jdbc在路由的时候就可以将它们路由到一起.
+      binding-tables:
     props:
       sql:
         show: true
