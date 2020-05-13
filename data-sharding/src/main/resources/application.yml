@@ -1,0 +1,51 @@
+spring:
+  shardingsphere:
+    datasource:
+      ## spring.shardingsphere.datasource.names用来指定多个数据源的名称（自定义）
+      names: db1,db2
+      db1: ## 数据源1的配置
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbcUrl: jdbc:mysql://localhost:3306/sharding_jdbc_1?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        driver: com.mysql.jdbc.Driver
+        username: root
+        password: root
+      db2: ## 数据源2的配置
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbcUrl: jdbc:mysql://localhost:3306/sharding_jdbc_2?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        driver: com.mysql.jdbc.Driver
+        username: root
+        password: root
+    sharding:
+      tables:
+        ## spring.shardingsphere.sharding.tables用来配置分片规则, 我们需要自定义一个逻辑表, 这边的逻辑表名为" t_simple "
+        t_simple:
+          ## 结合上面配置的数据源名称, 配置真实的数据表节点, 诸如：db1.t_simple_1, db1.t_simple_2, db2.t_simple_1等等
+          actual-data-nodes: db${1..2}.t_simple_${1..2}
+          ## 分表规则
+          table-strategy:
+            inline: ## 表示使用行表达式分片策略, 它支持groovy表达式
+              sharding-column: id #分片键
+              algorithm-expression: t_simple_${id % 2 + 1}
+          ## 分库规则
+          database-strategy:
+            inline: ## 表示使用行表达式分片策略, 它支持groovy表达式
+              sharding-column: name #分片键
+              algorithm-expression: db${name.hashCode() % 2 + 1}
+          ## 为t_simple表指定主键生成策略为雪花算法, 并指定主键主键列名为id
+          key-generator:
+            column: id
+            type: SNOWFLAKE
+      broadcast-tables:
+    props:
+      sql:
+        show: true
+
+
+## 日志配置
+logging:
+  level:
+    com.sym.mapper: debug
+    root: info
+    com:
+      itheima:
+        dbsharding: debug

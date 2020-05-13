@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans" xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        ">
+
+    <!-- sharding-jdbc整合spring的xml配置例子 -->
+
+    <bean class="com.zaxxer.hikari.HikariDataSource" destroy-method="close" id="ds0">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ds0" />
+        <property name="username" value="root" />
+        <property name="password" value="root" />
+    </bean>
+    <bean class="com.zaxxer.hikari.HikariDataSource" destroy-method="close" id="ds1">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ds1" />
+        <property name="username" value="root" />
+        <property name="password" value="root" />
+    </bean>
+
+    <sharding:data-source id="shardingDataSource">
+        <sharding:sharding-rule data-source-names="ds0,ds1">
+            <sharding:table-rules>
+                <sharding:table-rule actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy"
+                    logic-table="t_order" table-strategy-ref="orderTableStrategy" />
+                <sharding:table-rule actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy"
+                    logic-table="t_order_item" table-strategy-ref="orderItemTableStrategy" />
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+    <sharding:inline-strategy algorithm-expression="t_order$->{order_id % 2}" id="orderTableStrategy"
+        sharding-column="order_id" />
+    <sharding:inline-strategy algorithm-expression="t_order_item$->{order_id % 2}" id="orderItemTableStrategy"
+        sharding-column="order_id" />
+    <sharding:inline-strategy algorithm-expression="ds$->{user_id % 2}" id="databaseStrategy"
+        sharding-column="user_id" />
+</beans>
