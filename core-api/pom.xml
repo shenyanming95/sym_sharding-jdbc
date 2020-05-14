@@ -54,6 +54,12 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.driver.version}</version>
         </dependency>
+        <!-- for string util -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.10</version>
+        </dependency>
         <!-- for lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
