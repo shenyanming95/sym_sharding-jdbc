@@ -41,6 +41,7 @@ spring:
       ## 绑定表配置, 比如t_order和t_order_item是绑定关系, 那么在关联查询的时候就可以避免笛卡尔积路由
       ## 绑定表的意思就是两张表之间有关联字段, 这样sharding-jdbc在路由的时候就可以将它们路由到一起.
       binding-tables:
+        - t_order,t_order_item
     props:
       sql:
         show: true
