@@ -35,6 +35,11 @@ spring:
           key-generator:
             column: id
             type: SNOWFLAKE
+      ## 读写分离的配置
+#      master-slave-rules:
+#        db-slave: #自定义规则名称
+#          master-data-source: #主库节点配置
+#          slave-data-source-names: #从库节点配置
       ## 公共表配置, 每个数据节点需要各自创建一个公共表, 然后sharding-jdbc会一起维护(当新增、修改和删除的时候)
       broadcast-tables:
         - t_dict

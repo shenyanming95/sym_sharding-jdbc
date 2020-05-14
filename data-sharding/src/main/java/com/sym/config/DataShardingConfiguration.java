@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
+ * java配置例子
+ *
  * @author shenyanming
  * Created on 2020/5/14 14:11
  */
@@ -44,7 +46,7 @@ public class DataShardingConfiguration {
     }
 
     /**
-     * 获取数据分片的配置
+     * 数据分片的配置
      * @return ShardingRuleConfiguration
      */
     private ShardingRuleConfiguration getShardingRuleConfiguration(){
