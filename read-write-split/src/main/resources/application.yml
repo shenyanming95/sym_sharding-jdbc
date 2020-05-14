@@ -1,9 +1,36 @@
 spring:
   shardingsphere:
     datasource:
-      names:
+      names: m1,s1,s2 #配置主从数据源, 这边以"一主二从"为例
+      m1: #主库数据源配置
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbcUrl: jdbc:mysql://localhost:3306/sharding_jdbc_master?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        driver: com.mysql.jdbc.Driver
+        username: root
+        password: root
+      s1: #从库数据源配置
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbcUrl: jdbc:mysql://localhost:3306/sharding_jdbc_slave?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        driver: com.mysql.jdbc.Driver
+        username: root
+        password: root
+      s2: #从库数据源配置
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbcUrl: jdbc:mysql://localhost:3306/sharding_jdbc_slave_1?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        driver: com.mysql.jdbc.Driver
+        username: root
+        password: root
     sharding:
       master-slave-rules:
-        ds0:
-          master-data-source-name: m0
-          slave-data-source-name: s0
+        mysql-ds: #自定义一个读写分离规则
+          masterDataSourceName: m1 #指定主库数据源
+          slaveDataSourceNames: #指定从库数据源
+            - s1
+            - s2
+          oadBalanceAlgorithmType: ROUND_ROBIN
+    props:
+      sql:
+        show: true
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
